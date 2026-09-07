@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.{ts,tsx,js,jsx,mjs,cjs,py,go,rb,java,sql,sh,tf}"
+  - "**/*.{yaml,yml,json,toml}"
+  - "**/.env*"
+---
+
 # Security Guidelines
 
 ## Mandatory Security Checks

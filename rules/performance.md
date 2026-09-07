@@ -2,20 +2,34 @@
 
 ## Model Selection Strategy
 
-**Haiku 4.5** (90% of Sonnet capability, 3x cost savings):
-- Lightweight agents with frequent invocation
-- Pair programming and code generation
-- Worker agents in multi-agent systems
+Current lineup: the Claude 5 family plus Haiku 4.5. In agent frontmatter use the short
+names `opus`, `sonnet`, `haiku`; `/model` switches the session.
 
-**Sonnet 4.5** (Best coding model):
+**Haiku 4.5** (fastest and cheapest; 200K context):
+- Lightweight agents invoked frequently
+- Mechanical work: extraction, classification, formatting
+- Worker agents under an orchestrator
+
+**Sonnet 5** (strong general coding model; 1M context):
 - Main development work
 - Orchestrating multi-agent workflows
-- Complex coding tasks
 
-**Opus 4.5** (Deepest reasoning):
+**Opus 5** (the default for demanding work; 1M context):
 - Complex architectural decisions
-- Maximum reasoning requirements
-- Research and analysis tasks
+- Long-horizon agentic tasks
+- Research and analysis
+
+**Fable 5.1** (most capable widely released model; 1M context):
+- The hardest reasoning and longest-horizon work only — it costs more than Opus
+
+Every model above except Haiku 4.5 has a 1M context window.
+
+Two levers that often matter more than which model you pick:
+- **Effort** (`low` through `max`) — lower effort on a newer model frequently beats
+  higher effort on an older one. `high` is usually the sweet spot; `max` when
+  correctness outweighs cost; `low` for subagents and simple tasks.
+- **Fast mode** (`/fast`) — runs Opus with faster output. It does not downgrade to a
+  smaller model.
 
 ## Context Window Management
 

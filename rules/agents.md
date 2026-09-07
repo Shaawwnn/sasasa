@@ -24,9 +24,10 @@ No user prompt needed:
 3. Bug fix or new feature - Use **tdd-guide** agent
 4. Architectural decision - Use **architect** agent
 
-## Parallel Task Execution
+## Parallel Agent Execution
 
-ALWAYS use parallel Task execution for independent operations:
+Launch independent agents in one message so they run concurrently.
+(The tool is `Agent`; the `Task*` tools are for todo and background-task tracking.)
 
 ```markdown
 # GOOD: Parallel execution

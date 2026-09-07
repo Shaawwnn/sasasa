@@ -15,7 +15,7 @@ reviewed and tailored — see [Status](#status).
 | `agents/` | Subagent definitions | `~/.claude/agents/` |
 | `commands/` | Slash commands | `~/.claude/commands/` |
 | `skills/` | Skills — flat `.md`, or a directory with `SKILL.md` | `~/.claude/skills/` |
-| `rules/` | Rule docs, referenced from `CLAUDE.md` | project-level, by reference |
+| `rules/` | Personal rules; `paths:` frontmatter scopes them to matching files | `~/.claude/rules/` |
 | `hooks/` | Hook scripts plus their wiring — see `hooks/README.md` | merge into `settings.json` |
 | `examples/` | Sample `CLAUDE.md` and statusline to crib from | reference only |
 
@@ -24,6 +24,11 @@ reviewed and tailored — see [Status](#status).
 **Hooks — done.** Four working hooks, each a commented script in `hooks/scripts/`, wired
 by absolute path from `hooks/hooks.json`. Written to be readable: the comments explain the
 bash as much as the logic. Not merged into `settings.json` yet.
+
+**Rules — done.** Eight files, four scoped with `paths:` frontmatter so they load only
+when Claude opens a matching file. 188 lines load every session instead of 378. Stale
+facts corrected: the model lineup, the hook inventory, `permissions.allow` (not
+`allowedTools`), and `TaskCreate`/`TaskUpdate` (not `TodoWrite`).
 
 **Everything else — raw.** The rest arrived as a bulk import and is still generic or aimed
 at the wrong stack. My actual stack is GCP, Terraform, Firebase, Next.js and TypeScript.
@@ -38,7 +43,6 @@ Keep as-is — stack-agnostic and useful:
 
 Rewrite for my stack:
 - `skills/frontend-patterns.md`, `skills/backend-patterns.md`
-- `rules/` — keep the shape, replace the specifics
 - `agents/tdd-guide.md`, `agents/e2e-runner.md`, `commands/tdd.md`, `commands/e2e.md` —
   tied to a test setup I don't run yet
 

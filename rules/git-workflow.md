@@ -10,7 +10,11 @@
 
 Types: feat, fix, refactor, docs, test, chore, perf, ci
 
-Note: Attribution disabled globally via ~/.claude/settings.json.
+## Attribution
+
+Do not add Claude as an author or co-author. No `Co-Authored-By: Claude` trailer, no
+"Generated with Claude Code" line, no tool attribution of any kind in commit messages
+or PR bodies.
 
 ## Pull Request Workflow
 
