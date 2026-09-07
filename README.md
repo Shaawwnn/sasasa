@@ -1,7 +1,7 @@
 # sasasa — personal Claude Code config
 
-My `~/.claude` setup, versioned: the agents, commands, skills, rules, hooks and MCP
-servers I want available in every project.
+My `~/.claude` setup, versioned: the agents, commands, skills, rules and hooks I want
+available in every project.
 
 Nothing here is deployed yet. The repo is a staging area until each piece has been
 reviewed and tailored — see [Status](#status).
@@ -17,7 +17,6 @@ reviewed and tailored — see [Status](#status).
 | `skills/` | Skills — flat `.md`, or a directory with `SKILL.md` | `~/.claude/skills/` |
 | `rules/` | Rule docs, referenced from `CLAUDE.md` | project-level, by reference |
 | `hooks/` | Hook scripts plus their wiring — see `hooks/README.md` | merge into `settings.json` |
-| `mcp-configs/` | MCP server definitions | `~/.claude.json` or per-project |
 | `examples/` | Sample `CLAUDE.md` and statusline to crib from | reference only |
 
 ## Status
@@ -45,9 +44,6 @@ Rewrite for my stack:
 
 Cut:
 - `skills/clickhouse-io.md`, `skills/project-guidelines-example.md`
-- `mcp-configs/`: clickhouse, the four cloudflare servers, supabase, railway, vercel,
-  firecrawl, magic — wrong cloud. Keep github, filesystem, context7, memory,
-  sequential-thinking.
 - `commands/update-codemaps.md` — depends on a codemap convention I don't have
 
 ## Deploying
