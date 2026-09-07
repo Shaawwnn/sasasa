@@ -1,0 +1,25 @@
+# Runtime/state — never version these
+.DS_Store
+history.jsonl
+*.log
+*.lock
+.last-*
+daemon*/
+sessions/
+projects/
+shell-snapshots/
+paste-cache/
+file-history/
+session-env/
+debug/
+cache/
+backups/
+ide/
+jobs/
+statsig/
+todos/
+
+# Local overrides
+settings.local.json
+.env
+.env.*
