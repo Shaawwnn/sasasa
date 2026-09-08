@@ -1,0 +1,16 @@
+{
+  "name": "sasasa",
+  "owner": {
+    "name": "Shaawwnn"
+  },
+  "metadata": {
+    "description": "Shaawwnn's personal Claude Code configuration"
+  },
+  "plugins": [
+    {
+      "name": "sa",
+      "source": "./",
+      "description": "Personal Claude Code config: 9 agents, 9 slash commands, 2 skills, and 4 hooks. Agents own the procedures; commands are thin entry points to them."
+    }
+  ]
+}

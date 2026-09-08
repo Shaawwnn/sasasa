@@ -4,12 +4,16 @@
 points at them by absolute path. Edit a script and the change is live — there is no copy
 to keep in sync.
 
-**Not symlinked.** Claude Code has no `~/.claude/hooks/` directory, so the `hooks` key
-from `hooks.json` must be merged into `~/.claude/settings.json` by hand. The scripts stay
-here - `hooks.json` points at them by absolute path, so editing a script is live
-immediately, but editing `hooks.json` needs re-merging.
+**Loaded via the plugin.** `hooks/hooks.json` is a first-class hook location when the
+plugin is enabled, so there is no merge into `settings.json` and no step to remember.
+Editing either the scripts or `hooks.json` is live on the next session.
 
-Not merged yet, so nothing here is running.
+Paths use `${CLAUDE_PLUGIN_ROOT}`, which Claude Code substitutes for the plugin's own
+directory - so moving or renaming the repo no longer breaks the hooks.
+
+**This only resolves in plugin context.** Run without the plugin and
+`${CLAUDE_PLUGIN_ROOT}` does not expand, so the hooks fail. If you ever drop plugin mode,
+these four paths go back to absolute.
 
 ## Active hooks
 

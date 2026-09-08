@@ -1,63 +1,101 @@
 # sasasa — personal Claude Code config
 
-My `~/.claude` setup, versioned. Claude Code reads config from `~/.claude/`, so this repo
-is **symlinked into place** — the files here are the only copies, and an edit is live in
-the next session. Nothing is duplicated, nothing to re-sync.
+My Claude Code setup, versioned. It loads two ways, because no single mechanism carries
+everything:
+
+- **As a plugin** — `agents/`, `commands/`, `skills/` and `hooks/` load from this
+  directory directly. No copying, no symlinks, no merge step.
+- **By symlink** — `rules/` and `CLAUDE.md`, which plugins have no mechanism for.
 
 ## Layout
 
-| Path | What it is | Linked to |
+| Path | What it is | How it loads |
 |---|---|---|
-| `CLAUDE.md` | Global instructions for every project | `~/.claude/CLAUDE.md` |
-| `agents/` | 9 subagent definitions | `~/.claude/agents/` |
-| `commands/` | 9 slash commands | `~/.claude/commands/` |
-| `skills/` | 2 skills, each `<name>/SKILL.md` | `~/.claude/skills/` |
-| `rules/` | 8 personal rules | `~/.claude/rules/` |
-| `settings.json` | Theme, TUI mode, statusline, plugins | copied, not linked — see below |
-| `hooks/` | 4 hook scripts plus wiring | merged into `settings.json` — see below |
+| `.claude-plugin/plugin.json` | Plugin manifest. `name` sets the namespace | — |
+| `.claude-plugin/marketplace.json` | Lets the repo install itself as a plugin | — |
+| `agents/` | 9 subagent definitions | plugin |
+| `commands/` | 9 slash commands, namespaced `/sa:<name>` | plugin |
+| `skills/` | 2 skills, each `<name>/SKILL.md` | plugin |
+| `hooks/` | 4 hook scripts plus `hooks.json` | plugin |
+| `CLAUDE.md` | Global instructions for every project | symlink to `~/.claude/CLAUDE.md` |
+| `rules/` | 8 personal rules | symlink to `~/.claude/rules/` |
+| `settings.json` | Theme, TUI mode, statusline, plugins | copy of `~/.claude/settings.json` |
 | `examples/` | Sample config to crib from | not deployed |
+| `LICENSE` | MIT | — |
 
 ## How it's wired
 
-Four directories and `CLAUDE.md` are symlinks. A symlink is a signpost: `~/.claude/agents`
-contains nothing itself, it points at `agents/` in this repo. Claude Code follows it
-without knowing.
+### The plugin half
+
+**Try it for one session** — nothing installed, nothing written to `~/.claude`:
+
+```sh
+claude --plugin-dir ~/projects/sasasa
+```
+
+**Install it for every session** — this repo is both the plugin and its own marketplace,
+so it installs from itself:
+
+```sh
+claude plugin marketplace add ~/projects/sasasa
+claude plugin install sa@sasasa
+```
+
+If the install summary says `Run /reload-plugins to activate.`, run that. Check it with
+`claude plugin list` and `claude plugin details sa`, which also prints the token cost.
+To back out: `claude plugin uninstall sa` and `claude plugin marketplace remove sasasa`.
+
+Validate the manifests any time with `claude plugin validate .`.
+
+Commands and skills are namespaced by the manifest's `name`, so `/tdd` is `/sa:tdd` and
+`/plan` is `/sa:plan`. Change the namespace by changing one field in
+`.claude-plugin/plugin.json`.
+
+Hook script paths use `${CLAUDE_PLUGIN_ROOT}`, which Claude Code substitutes for this
+directory — so the repo can move without silently breaking them.
+
+To load it every session instead of passing the flag, install it as a plugin.
+
+### The symlink half
+
+`rules/` and `CLAUDE.md` are not plugin components — plugins have no mechanism for either
+— so they still need linking:
 
 ```sh
 ln -s ~/projects/sasasa/CLAUDE.md ~/.claude/CLAUDE.md
-ln -s ~/projects/sasasa/agents    ~/.claude/agents
-ln -s ~/projects/sasasa/commands  ~/.claude/commands
-ln -s ~/projects/sasasa/skills    ~/.claude/skills
 ln -s ~/projects/sasasa/rules     ~/.claude/rules
 ```
 
-Verify with `ls -la ~/.claude` — each should read `agents -> /Users/sasasa/projects/sasasa/agents`.
+A symlink is a signpost: `~/.claude/rules` holds nothing itself, it points here. Verify
+with `ls -la ~/.claude`.
 
-**Two things are not symlinked:**
+### settings.json
 
-- **`settings.json`** — Claude Code writes to this file itself (theme, model, plugin
-  toggles), so a symlink would have the app editing the repo behind git's back. It stays a
-  copy. After changing settings through the app, copy the live file back:
-  `cp ~/.claude/settings.json settings.json`.
-- **`hooks/`** — there is no `~/.claude/hooks/` directory. The `hooks` key from
-  `hooks/hooks.json` has to be merged into `~/.claude/settings.json` by hand. The scripts
-  themselves stay put, since `hooks.json` references them by absolute path.
+Not linked and not shipped by the plugin. A plugin's root `settings.json` only honours the
+`agent` and `subagentStatusLine` keys and silently ignores everything else, so the theme,
+TUI mode and statusline here would have no effect as plugin defaults. It stays a copy of
+the live file. After changing settings through the app:
+`cp ~/.claude/settings.json settings.json`.
 
 ## Maintaining it
 
-- **Renaming or moving this repo breaks everything, silently.** Symlinks become dangling
-  and Claude Code sees no agents rather than an error. `hooks.json` hard-codes
-  `/Users/sasasa/projects/sasasa/hooks/scripts/` too. If the repo moves, relink and update
-  those paths.
-- **New agent, command, or rule:** add the file here. It's live immediately — no relinking,
-  the directory itself is the link.
+- **Moving the repo** breaks the two symlinks silently — Claude Code sees no rules rather
+  than an error. The plugin half survives, since `${CLAUDE_PLUGIN_ROOT}` is relative to
+  wherever the plugin is.
+- **New agent, command, skill, or rule:** add the file here. Live next session; nothing to
+  relink or re-merge.
 - **New skill:** must be `skills/<name>/SKILL.md`. A flat `.md` in `skills/` is never
   discovered.
-- **Editing a hook script:** live immediately. Editing `hooks/hooks.json` requires
-  re-merging into `~/.claude/settings.json`.
-- **Health check:** `ls -la ~/.claude` for dangling links, and
-  `jq -r '.hooks[][].hooks[].args[0]' hooks/hooks.json | xargs ls -l` to confirm every hook
-  script still resolves.
+- **A user-level agent overrides a plugin agent of the same name.** So don't put anything
+  in `~/.claude/agents/` — it wins silently over the copy here. Skills behave the opposite
+  way: both stay available under different names.
+- **Health check:** `ls -la ~/.claude | grep '\->'` lists every symlink and its target -
+  anything pointing at a path that no longer exists is broken. `claude plugin list`
+  confirms `sa` is installed and enabled.
+- **Seeing what actually loaded:** `/context` reports `CLAUDE.md` and always-on rules
+  under **Memory files**, not as a separate entry. Run `/memory` for the file list, or
+  `/context all` to expand. Path-scoped rules are correctly absent until Claude opens a
+  matching file.
 
 ## State
 
@@ -85,5 +123,4 @@ options.
 
 ## Still open
 
-- Hooks are not merged into `~/.claude/settings.json`, so they aren't running.
 - `examples/` is untouched sample config from the original import.
