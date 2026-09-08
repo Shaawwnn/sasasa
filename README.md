@@ -5,6 +5,33 @@ My personal Claude Code config: 9 agents, 9 commands, 2 skills, 4 hooks, 8 rules
 Agents own the procedures. Commands are thin entry points to them. Rules are always-on or
 file-scoped preferences. One copy of anything.
 
+## Will this fit your stack
+
+The agents adapt: each reads the project's own manifest and CI to find its build, test and
+lint commands rather than assuming them. Those work anywhere.
+
+Everything else leans JavaScript and TypeScript.
+
+| | Fits |
+|---|---|
+| **Best** | TypeScript or JavaScript, React or Next.js, Prettier, GitHub with `gh` |
+| **Fine** | Any JS/TS project. The React skill idles, the rest applies |
+| **Partial** | Other languages. The 9 agents work; the 4 hooks and 4 of 8 rules never fire, and `frontend-patterns` is irrelevant |
+
+What is JS/TS specific:
+
+- **Hooks** run on `.ts .tsx .js .jsx .mjs .cjs` only. Prettier formatting and the
+  `console.log` checks do nothing elsewhere. One hook needs the GitHub CLI.
+- **`frontend-patterns`** is React and Next.js.
+- **4 of 8 rules** are scoped to JS/TS globs and stay dormant otherwise. `security.md` also
+  covers Python, Go, Ruby, Java, SQL, shell, Terraform and config files.
+
+What is not stack specific: all 9 agents, all 9 commands, `backend-patterns`, and the 4
+always-on rules.
+
+Nothing breaks on a stack it does not cover. The parts that do not apply simply never
+trigger, so a Python or Go project still gets the agents and commands.
+
 ## Install
 
 ```sh
