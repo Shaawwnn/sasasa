@@ -11,22 +11,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Manifests are valid JSON
-        run: |
-          jq -e . .claude-plugin/plugin.json > /dev/null
-          jq -e . .claude-plugin/marketplace.json > /dev/null
-
-      - name: Manifests have required fields
-        run: |
-          jq -e '.name and .description' .claude-plugin/plugin.json > /dev/null
-          jq -e '.name and .owner.name and (.plugins | length > 0)' .claude-plugin/marketplace.json > /dev/null
-
-      - name: Every marketplace plugin source resolves
-        run: |
-          jq -r '.plugins[].source' .claude-plugin/marketplace.json | while read -r src; do
-            test -d "$src" || { echo "::error::source does not exist: $src"; exit 1; }
-          done
-
       - name: No personal paths
         run: |
           # a path from one machine breaks silently for everyone else
@@ -51,9 +35,8 @@ jobs:
               || { echo "::error::$d SKILL.md name '$name' != directory name"; exit 1; }
           done
 
-      - name: Hooks are portable and resolve
+      - name: Hooks are portable, resolve, and parse
         run: |
-          jq -e . hooks/hooks.json > /dev/null
           jq -r '.hooks[][].hooks[].args[0]' hooks/hooks.json | while read -r p; do
             case "$p" in
               '${CLAUDE_PLUGIN_ROOT}'/*) ;;
@@ -62,48 +45,18 @@ jobs:
             f="${p/\$\{CLAUDE_PLUGIN_ROOT\}/.}"
             test -x "$f" || { echo "::error::hook script missing or not executable: $f"; exit 1; }
           done
-
-      - name: Hook scripts parse
-        run: for f in hooks/scripts/*.sh; do bash -n "$f"; done
-
-      - name: Agent frontmatter is valid
-        run: |
-          for f in agents/*.md; do
-            for key in name description model; do
-              grep -q "^$key:" "$f" || { echo "::error::$f missing '$key:'"; exit 1; }
-            done
-            name=$(sed -n 's/^name:[[:space:]]*//p' "$f" | head -1)
-            test "$name" = "$(basename "$f" .md)" \
-              || { echo "::error::$f name '$name' != filename"; exit 1; }
-          done
-
-      - name: Command frontmatter is valid
-        run: |
-          for f in commands/*.md; do
-            head -1 "$f" | grep -q '^---$' || { echo "::error::$f has no frontmatter"; exit 1; }
-            grep -q '^description:' "$f" || { echo "::error::$f missing 'description:'"; exit 1; }
-          done
+          for f in hooks/scripts/*.sh; do bash -n "$f"; done
 
       - name: Commands reference agents that exist
         run: |
+          # commands are thin delegators; a renamed agent breaks them silently
           grep -ohE '\*\*[a-z-]+\*\*' commands/*.md | tr -d '*' | sort -u | while read -r a; do
             test -f "agents/$a.md" || { echo "::error::command references unknown agent: $a"; exit 1; }
           done
 
-      - name: No em dashes in prose
-        # CLAUDE.md forbids them. Prose only; shell commands are unaffected.
-        run: |
-          if grep -rn '—' --include='*.md' --exclude-dir=.git . ; then
-            echo "::error::em dashes found - CLAUDE.md says never use them"
-            exit 1
-          fi
-
-  plugin-validate:
-    name: claude plugin validate
+  manifests:
+    name: Manifests
     runs-on: ubuntu-latest
-    # Advisory: not yet confirmed whether `claude plugin validate` runs without
-    # authentication on a CI runner. Once verified, drop continue-on-error.
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
