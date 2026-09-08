@@ -68,7 +68,6 @@ opens a matching file, so their absence from `/memory` is correct.
 | `hooks/` | 4 scripts + `hooks.json` | plugin |
 | `CLAUDE.md` | global instructions | symlink |
 | `rules/` | 8 rules | symlink |
-| `settings.json` | theme, statusline | copy |
 | `examples/` | sample config | not deployed |
 
 <details>
@@ -80,9 +79,9 @@ from itself. Hook paths use `${CLAUDE_PLUGIN_ROOT}`, so the repo works from anyw
 
 `CLAUDE.md` and `rules/` have no plugin equivalent, hence the symlinks.
 
-`settings.json` is neither: a plugin's root `settings.json` only honours `agent` and
-`subagentStatusLine`, so the theme and statusline here would do nothing. It stays a copy -
-`cp ~/.claude/settings.json settings.json` after changing settings in the app.
+`settings.json` is not in this repo. A plugin's root `settings.json` only honours `agent`
+and `subagentStatusLine`, so a theme or statusline there would do nothing, and a copy just
+drifts from the live file.
 </details>
 
 ## Maintaining
