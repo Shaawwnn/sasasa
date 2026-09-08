@@ -1,27 +1,8 @@
-# Test Coverage
+---
+description: Measure test coverage and write tests for the gaps.
+argument-hint: "[path]"
+---
 
-Analyze test coverage and generate missing tests:
+Use the **tdd-guide** agent.
 
-1. Run tests with coverage: npm test --coverage or pnpm test --coverage
-
-2. Analyze coverage report (coverage/coverage-summary.json)
-
-3. Identify files below 80% coverage threshold
-
-4. For each under-covered file:
-   - Analyze untested code paths
-   - Generate unit tests for functions
-   - Generate integration tests for APIs
-   - Generate E2E tests for critical flows
-
-5. Verify new tests pass
-
-6. Show before/after coverage metrics
-
-7. Ensure project reaches 80%+ overall coverage
-
-Focus on:
-- Happy path scenarios
-- Error handling
-- Edge cases (null, undefined, empty)
-- Boundary conditions
+Run coverage, list the files furthest below the project's threshold, and write tests for the untested paths — error handling and edge cases first, since happy paths are usually already covered. Report before/after coverage.

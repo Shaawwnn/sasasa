@@ -1,40 +1,8 @@
-# Code Review
+---
+description: Review uncommitted changes for correctness, security, and quality.
+argument-hint: "[path]"
+---
 
-Comprehensive security and quality review of uncommitted changes:
+Use the **code-reviewer** agent, and the **security-reviewer** agent as well when the diff touches auth, user input, API endpoints, or secrets.
 
-1. Get changed files: git diff --name-only HEAD
-
-2. For each changed file, check for:
-
-**Security Issues (CRITICAL):**
-- Hardcoded credentials, API keys, tokens
-- SQL injection vulnerabilities
-- XSS vulnerabilities  
-- Missing input validation
-- Insecure dependencies
-- Path traversal risks
-
-**Code Quality (HIGH):**
-- Functions > 50 lines
-- Files > 800 lines
-- Nesting depth > 4 levels
-- Missing error handling
-- console.log statements
-- TODO/FIXME comments
-- Missing JSDoc for public APIs
-
-**Best Practices (MEDIUM):**
-- Mutation patterns (use immutable instead)
-- Emoji usage in code/comments
-- Missing tests for new code
-- Accessibility issues (a11y)
-
-3. Generate report with:
-   - Severity: CRITICAL, HIGH, MEDIUM, LOW
-   - File location and line numbers
-   - Issue description
-   - Suggested fix
-
-4. Block commit if CRITICAL or HIGH issues found
-
-Never approve code with security vulnerabilities!
+Report findings by severity with file and line. Do not fix — report.
