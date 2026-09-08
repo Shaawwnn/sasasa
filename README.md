@@ -7,6 +7,85 @@ everything:
   directory directly. No copying, no symlinks, no merge step.
 - **By symlink** — `rules/` and `CLAUDE.md`, which plugins have no mechanism for.
 
+## Using this yourself
+
+You don't have to take all of it. The plugin and the symlinks are independent — install
+one, both, or neither.
+
+### 1. Install the plugin (agents, commands, skills, hooks)
+
+```sh
+claude plugin marketplace add Shaawwnn/sasasa
+claude plugin install sa@sasasa
+```
+
+If the install summary says `Run /reload-plugins to activate.`, run that.
+
+Check it worked:
+
+```sh
+claude plugin list              # sa@sasasa, enabled
+claude plugin details sa        # inventory and token cost
+```
+
+Commands are namespaced by the plugin name, so they're `/sa:plan`, `/sa:tdd`,
+`/sa:build-fix` and so on — type `/sa:` and autocomplete will list them.
+
+**What turns on immediately:** four hooks run in every project. Prettier formats JS/TS
+files you edit (only if Prettier is already installed - it never downloads anything), a
+note appears when an edited file still contains `console.log`, and the same check runs
+again at the end of each turn. None of them block; all stay silent when there's nothing
+to say. Read `hooks/README.md` before enabling if you'd rather know exactly what runs.
+
+To remove it all:
+
+```sh
+claude plugin uninstall sa
+claude plugin marketplace remove sasasa
+```
+
+### 2. Take the rules and CLAUDE.md (optional, separate)
+
+Plugins can't carry either of these, so they're symlinked by hand. **These are personal
+preferences, not general advice** — read them before linking, and copy the files instead
+if you want to edit them.
+
+```sh
+git clone https://github.com/Shaawwnn/sasasa.git
+ln -s /absolute/path/to/sasasa/CLAUDE.md ~/.claude/CLAUDE.md
+ln -s /absolute/path/to/sasasa/rules     ~/.claude/rules
+```
+
+⚠️ If `~/.claude/rules` already exists as a directory, `ln -s` puts the link *inside* it
+and you get `~/.claude/rules/rules`, which loads nothing. Check with
+`ls -la ~/.claude` first, and move anything already there out of the way.
+
+⚠️ If you already have a `~/.claude/CLAUDE.md`, linking replaces it. Back it up first.
+
+Verify:
+
+```sh
+ls -la ~/.claude | grep '\->'    # both links, each with a real target
+ls ~/.claude/rules               # 8 files
+```
+
+Then start a session and run `/memory`. `CLAUDE.md` and the four always-on rules should
+be listed. The other four rules carry `paths:` frontmatter and load only when Claude opens
+a matching file, so their absence is correct.
+
+Undo with `rm ~/.claude/CLAUDE.md ~/.claude/rules` — removing a symlink never touches the
+file it points at.
+
+### Try before you commit to anything
+
+```sh
+git clone https://github.com/Shaawwnn/sasasa.git
+claude --plugin-dir ./sasasa
+```
+
+That loads the plugin for one session only. Nothing is installed, nothing is written to
+`~/.claude`, and quitting ends it.
+
 ## Layout
 
 | Path | What it is | How it loads |
@@ -25,57 +104,31 @@ everything:
 
 ## How it's wired
 
-### The plugin half
+Two mechanisms, because no single one carries everything. Commands are in
+[Using this yourself](#using-this-yourself); this section is the why.
 
-**Try it for one session** — nothing installed, nothing written to `~/.claude`:
+**The plugin** carries `agents/`, `commands/`, `skills/` and `hooks/`. The repo is both
+the plugin and its own marketplace — `marketplace.json` lists one plugin with
+`"source": "./"` — so it installs from itself with no second repo to host.
 
-```sh
-claude --plugin-dir ~/projects/sasasa
-```
+Commands and skills are namespaced by the manifest's `name`, which is why they're
+`/sa:tdd` rather than `/tdd`. Change one field in `.claude-plugin/plugin.json` to rename
+the namespace. Namespacing also means nothing here can shadow a built-in command.
 
-**Install it for every session** — this repo is both the plugin and its own marketplace,
-so it installs from itself:
+Hook script paths use `${CLAUDE_PLUGIN_ROOT}`, substituted for the plugin's own directory,
+so the repo works from any location. Nothing is hard-coded to one machine.
 
-```sh
-claude plugin marketplace add ~/projects/sasasa
-claude plugin install sa@sasasa
-```
+**The symlinks** carry `CLAUDE.md` and `rules/`, which have no plugin equivalent. A
+symlink is a signpost: `~/.claude/rules` holds nothing itself, it points here, and the
+app follows it without knowing. One real copy, so an edit is live in the next session.
 
-If the install summary says `Run /reload-plugins to activate.`, run that. Check it with
-`claude plugin list` and `claude plugin details sa`, which also prints the token cost.
-To back out: `claude plugin uninstall sa` and `claude plugin marketplace remove sasasa`.
+**`settings.json` is neither.** A plugin's root `settings.json` only honours the `agent`
+and `subagentStatusLine` keys and silently ignores the rest, so the theme, TUI mode and
+statusline here would do nothing as plugin defaults. It stays a plain copy of the live
+file. After changing settings through the app, copy it back:
+`cp ~/.claude/settings.json settings.json`.
 
 Validate the manifests any time with `claude plugin validate .`.
-
-Commands and skills are namespaced by the manifest's `name`, so `/tdd` is `/sa:tdd` and
-`/plan` is `/sa:plan`. Change the namespace by changing one field in
-`.claude-plugin/plugin.json`.
-
-Hook script paths use `${CLAUDE_PLUGIN_ROOT}`, which Claude Code substitutes for this
-directory — so the repo can move without silently breaking them.
-
-To load it every session instead of passing the flag, install it as a plugin.
-
-### The symlink half
-
-`rules/` and `CLAUDE.md` are not plugin components — plugins have no mechanism for either
-— so they still need linking:
-
-```sh
-ln -s ~/projects/sasasa/CLAUDE.md ~/.claude/CLAUDE.md
-ln -s ~/projects/sasasa/rules     ~/.claude/rules
-```
-
-A symlink is a signpost: `~/.claude/rules` holds nothing itself, it points here. Verify
-with `ls -la ~/.claude`.
-
-### settings.json
-
-Not linked and not shipped by the plugin. A plugin's root `settings.json` only honours the
-`agent` and `subagentStatusLine` keys and silently ignores everything else, so the theme,
-TUI mode and statusline here would have no effect as plugin defaults. It stays a copy of
-the live file. After changing settings through the app:
-`cp ~/.claude/settings.json settings.json`.
 
 ## Maintaining it
 
