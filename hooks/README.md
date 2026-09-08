@@ -4,8 +4,12 @@
 points at them by absolute path. Edit a script and the change is live — there is no copy
 to keep in sync.
 
-Merge the `hooks` key from `hooks.json` into `~/.claude/settings.json` to activate.
-Nothing is active yet.
+**Not symlinked.** Claude Code has no `~/.claude/hooks/` directory, so the `hooks` key
+from `hooks.json` must be merged into `~/.claude/settings.json` by hand. The scripts stay
+here - `hooks.json` points at them by absolute path, so editing a script is live
+immediately, but editing `hooks.json` needs re-merging.
+
+Not merged yet, so nothing here is running.
 
 ## Active hooks
 

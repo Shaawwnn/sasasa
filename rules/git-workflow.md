@@ -3,12 +3,27 @@
 ## Commit Message Format
 
 ```
-<type>: <description>
+<emoji> <description>
 
 <optional body>
 ```
 
-Types: feat, fix, refactor, docs, test, chore, perf, ci
+Lead with the emoji that matches the kind of change. It carries meaning - never pick one
+for decoration.
+
+| Change | Emoji |
+|---|---|
+| New feature | ✨ |
+| Bug fix | 🐛 |
+| Refactor | ♻️ |
+| Docs | 📝 |
+| Tests | ✅ |
+| Config, tooling, chore | 🔧 |
+| Performance | ⚡ |
+| CI | 👷 |
+| Remove code or files | 🔥 |
+
+One concern per commit. Never bundle unrelated changes.
 
 ## Attribution
 
