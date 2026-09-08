@@ -2,26 +2,62 @@
 
 ## Commit Message Format
 
+[gitmoji](https://gitmoji.dev), one space, capitalised description. No type prefix.
+
 ```
-<emoji> <description>
+<emoji> <Description>
 
 <optional body>
 ```
 
-Lead with the emoji that matches the kind of change. It carries meaning - never pick one
-for decoration.
+```
+♻️ Refactor the hook path handling
+✨ Added plugin manifest
+```
 
-| Change | Emoji |
+| Emoji | For |
 |---|---|
-| New feature | ✨ |
-| Bug fix | 🐛 |
-| Refactor | ♻️ |
-| Docs | 📝 |
-| Tests | ✅ |
-| Config, tooling, chore | 🔧 |
-| Performance | ⚡ |
-| CI | 👷 |
-| Remove code or files | 🔥 |
+| ✨ | New feature |
+| 🐛 | Bug fix |
+| 🚑️ | Critical hotfix |
+| 🩹 | Small fix for something non-critical |
+| ♻️ | Refactor, no behaviour change |
+| 🎨 | Improve structure or formatting of existing code |
+| ⚡️ | Performance |
+| 🔥 | Remove code or files |
+| ⚰️ | Remove dead code |
+| 🚚 | Move or rename files |
+| 📝 | Documentation |
+| 💡 | Comments in source |
+| ✏️ | Typo |
+| ✅ | Add, update, or pass tests |
+| 🧪 | Add a failing test |
+| 🔧 | Configuration files |
+| 🔨 | Development scripts |
+| 👷 | CI and workflows |
+| 💚 | Fix a failing CI build |
+| ⬆️ | Upgrade dependencies |
+| ⬇️ | Downgrade dependencies |
+| ➕ | Add a dependency |
+| ➖ | Remove a dependency |
+| 📌 | Pin a dependency to a version |
+| 🔒️ | Fix a security or privacy issue |
+| 🏷️ | Types |
+| 🦺 | Validation |
+| 🥅 | Error handling |
+| 🔊 | Add logs |
+| 🔇 | Remove logs |
+| 🏗️ | Architectural change |
+| 💥 | Breaking change |
+| ⏪️ | Revert |
+| 🚧 | Work in progress |
+| 🎉 | Start a project |
+| 🔖 | Release or version tag |
+| 📄 | Add or update a license |
+| 🙈 | .gitignore |
+
+Full set at [gitmoji.dev](https://gitmoji.dev). Prefer the table - the rest exist, but a
+log everyone can scan beats an exhaustive vocabulary.
 
 One concern per commit. Never bundle unrelated changes.
 
