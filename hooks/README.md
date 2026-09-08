@@ -35,12 +35,14 @@ printf '{}' | hooks/scripts/stopaudit.sh
 All four exit 0 and print nothing when they have nothing to say, so they never interrupt
 a turn.
 
-### The absolute path
+### Script paths
 
-`hooks.json` hard-codes `/Users/sasasa/projects/sasasa/hooks/scripts/`. That is the cost
-of keeping the scripts as real files: move or rename this repo and the hooks stop firing,
-silently. If this config ever needs to work on a second machine, that path is the one
-thing to change.
+`hooks.json` points at the scripts with `${CLAUDE_PLUGIN_ROOT}`, which Claude Code
+substitutes for the plugin's own directory. Nothing is hard-coded, so the repo works from
+any location and on any machine.
+
+The placeholder only resolves in plugin context. Outside it there is no substitution and
+the hooks fail, so these paths would have to become absolute.
 
 `command` is `bash` and the script path goes in `args`. With `args` set, Claude Code
 spawns the process directly instead of going through a shell, so the path needs no
@@ -93,5 +95,5 @@ Reference: https://code.claude.com/docs/en/hooks
 
 - Prettier resolves `./node_modules/.bin/prettier` first, then a global install, then does
   nothing. It never invokes `npx`, which would hit the network.
-- `prurl.sh` needs the GitHub CLI (`gh`), which is not installed on this machine. Until it
-  is, that hook can never fire.
+- `prurl.sh` needs the GitHub CLI (`gh`). Without it the hook simply never fires, since
+  it only triggers after `gh pr create`.
