@@ -13,24 +13,23 @@ directory - so moving or renaming the repo no longer breaks the hooks.
 
 **This only resolves in plugin context.** Run without the plugin and
 `${CLAUDE_PLUGIN_ROOT}` does not expand, so the hooks fail. If you ever drop plugin mode,
-these three paths go back to absolute.
+these two paths go back to absolute.
 
 ## Active hooks
 
 | Script | Event | Matcher | Filter | What it does |
 |---|---|---|---|---|
 | `fmt.sh` | PostToolUse | `Edit\|Write\|NotebookEdit` | — | Runs Prettier on the edited file, if Prettier is installed |
-| `conlog.sh` | PostToolUse | `Edit\|Write\|NotebookEdit` | — | Reports leftover `console.log` back to Claude |
 | `prurl.sh` | PostToolUse | `Bash` | `if: Bash(gh pr create *)` | Surfaces the new PR's URL plus check/review commands |
 
 Every script is heavily commented and runs standalone. To try one, feed it the JSON a
 hook would receive:
 
 ```sh
-printf '{"tool_input":{"file_path":"/path/to/file.ts"}}' | hooks/scripts/conlog.sh
+printf '{"tool_input":{"file_path":"/path/to/file.ts"}}' | hooks/scripts/fmt.sh
 ```
 
-All three exit 0 and print nothing when they have nothing to say, so they never interrupt
+Both exit 0 and print nothing when they have nothing to say, so they never interrupt
 a turn.
 
 ### Script paths
@@ -85,11 +84,14 @@ Reference: https://code.claude.com/docs/en/hooks
   non-interactive or agent-driven push.
 - **Block writing any `.md`/`.txt`** — would block this README.
 - **tmux reminder on install/test/build** — fires constantly; noise.
-- **`console.log` sweep of the whole diff on `Stop`** - it grepped whole file contents,
-  so a `console.log` long settled on `HEAD` was reported the moment you touched the file
-  for any other reason. On `Stop` that re-invokes the turn, so the hook fired again on a
-  match nobody could clear: an endless loop. `conlog.sh` already covers lines Claude
-  actually writes.
+- **`console.log` reporting, on any event** - tried twice, removed both times. On `Stop`
+  (`stopaudit.sh`) it grepped whole file contents, so a `console.log` long settled on
+  `HEAD` was reported the moment you touched the file for any other reason; because `Stop`
+  re-invokes the turn it then fired again on a match nobody could clear, an endless loop
+  (#1). On `PostToolUse` (`conlog.sh`) it could not loop, but it was the same whole-file
+  grep, so it nagged about pre-existing lines and commented-out ones alike. A hook that
+  cannot tell a line you just wrote from one that shipped two years ago is noise; code
+  review catches the real leftovers.
 - **`tsc --noEmit` after every edit** — right idea, but it type-checks the whole project
   on every single edit. Worth adding back as `"async": true`, scoped to projects that
   actually have a `tsconfig.json`.

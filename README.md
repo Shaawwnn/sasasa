@@ -1,6 +1,6 @@
 # sasasa
 
-My personal Claude Code config: 9 agents, 9 commands, 2 skills, 3 hooks, 8 rules.
+My personal Claude Code config: 9 agents, 9 commands, 2 skills, 2 hooks, 8 rules.
 
 Agents own the procedures. Commands are thin entry points to them. Rules are always-on or
 file-scoped preferences. One copy of anything.
@@ -16,12 +16,12 @@ Everything else leans JavaScript and TypeScript.
 |---|---|
 | **Best** | TypeScript or JavaScript, React or Next.js, Prettier, GitHub with `gh` |
 | **Fine** | Any JS/TS project. The React skill idles, the rest applies |
-| **Partial** | Other languages. The 9 agents work; the 3 hooks and 4 of 8 rules never fire, and `frontend-patterns` is irrelevant |
+| **Partial** | Other languages. The 9 agents work; the 2 hooks and 4 of 8 rules never fire, and `frontend-patterns` is irrelevant |
 
 What is JS/TS specific:
 
-- **Hooks** run on `.ts .tsx .js .jsx .mjs .cjs` only. Prettier formatting and the
-  `console.log` check do nothing elsewhere. One hook needs the GitHub CLI.
+- **The Prettier hook** covers `.ts .tsx .js .jsx .mjs .cjs .json .css .scss .md`, and
+  only when Prettier is already installed. The PR hook needs the GitHub CLI.
 - **`frontend-patterns`** is React and Next.js.
 - **4 of 8 rules** are scoped to JS/TS globs and stay dormant otherwise. `security.md` also
   covers Python, Go, Ruby, Java, SQL, shell, Terraform and config files.
@@ -41,9 +41,9 @@ claude plugin install sa@sasasa
 
 Commands are namespaced: `/sa:plan`, `/sa:tdd`, `/sa:build-fix`. Type `/sa:` for the list.
 
-Installing turns on three hooks in every project: Prettier on edit (only if already
-installed), a `console.log` report on edit, and the PR URL after `gh pr create`. None
-block. See [hooks/README.md](hooks/README.md).
+Installing turns on two hooks in every project: Prettier on edit (only if already
+installed), and the PR URL after `gh pr create`. Neither blocks. See
+[hooks/README.md](hooks/README.md).
 
 Remove with `claude plugin uninstall sa`.
 

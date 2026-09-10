@@ -1,7 +1,7 @@
 {
   "name": "sa",
   "description": "Personal Claude Code config: agents, slash commands, skills, and hooks. Agents own the procedures; commands are thin entry points to them.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": {
     "name": "Shaawwnn"
   }
