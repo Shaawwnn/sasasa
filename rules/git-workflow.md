@@ -61,12 +61,6 @@ log everyone can scan beats an exhaustive vocabulary.
 
 One concern per commit. Never bundle unrelated changes.
 
-## Attribution
-
-Do not add Claude as an author or co-author. No `Co-Authored-By: Claude` trailer, no
-"Generated with Claude Code" line, no tool attribution of any kind in commit messages
-or PR bodies.
-
 ## Pull Request Workflow
 
 When creating PRs:
